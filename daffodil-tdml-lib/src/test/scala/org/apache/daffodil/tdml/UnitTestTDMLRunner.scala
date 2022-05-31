@@ -345,6 +345,46 @@ class UnitTestTDMLRunner {
     assertEquals(expected, actual)
   }
 
+  @Test def testCommentBit(): Unit = {
+        val xml = <document bitOrder="LSBFirst">
+                <documentPart type="bits">00000010 //this is a label111</documentPart>
+              </document>
+
+    val doc = new Document(xml, null)
+    val dp = doc.documentParts.collect { case x: BitsDocumentPart => x }
+    val firstPart = dp(0)
+    assertEquals("00000010", firstPart.bitDigits)
+  }
+
+  @Test def testCommentBitWithNewLine(): Unit = {
+        val xml = <document bitOrder="LSBFirst">
+                <documentPart type="bits">01 01 11 //flagByte1
+                                          1 //bool2</documentPart>
+              </document>
+
+    val doc = new Document(xml, null)
+    val dp = doc.documentParts.collect { case x: BitsDocumentPart => x }
+    val firstPart = dp(0)
+    assertEquals("0101111", firstPart.bitDigits)
+  }
+
+  @Test def testCommentByte(): Unit = {
+    val xml = <document><documentPart type="byte">12 3A BC.abc //Label (ABCDEF123456789</documentPart></document>
+    val doc = new Document(xml, null)
+    val dp = doc.documentParts.collect { case x: ByteDocumentPart => x }
+    val hexDigits = dp(0).hexDigits
+    assertEquals("123ABCabc", hexDigits)
+  }
+
+    @Test def testCommentByteWithNewLine(): Unit = {
+    val xml = <document><documentPart type="byte">123ABCabc //Label (ABCDEF123456789
+      456DEFdef //New Label</documentPart></document>
+    val doc = new Document(xml, null)
+    val dp = doc.documentParts.collect { case x: ByteDocumentPart => x }
+    val hexDigits = dp(0).hexDigits
+    assertEquals("123ABCabc456DEFdef", hexDigits)
+  }
+
   @Test def testLSB3_utf8_1char(): Unit = {
     val xml = <document>
                 <documentPart type="text" bitOrder="LSBFirst">1</documentPart>

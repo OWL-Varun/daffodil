@@ -29,6 +29,7 @@ import java.nio.LongBuffer
 import java.nio.charset.CoderResult
 import java.nio.charset.StandardCharsets
 import scala.collection.mutable
+import scala.collection.mutable.ListBuffer
 import scala.language.postfixOps
 import scala.util.Try
 import scala.xml.Node
@@ -2214,20 +2215,16 @@ class ByteDocumentPart(part: Node, parent: Document) extends DataDocumentPart(pa
     bits
   }
 
-  // Note: anything that is not a valid hex digit (or binary digit for binary) is simply skipped
-  // TODO: we should check for whitespace and other characters we want to allow, and verify them.
-  // TODO: Or better, validate this in the XML Schema for tdml via a pattern facet
-  // TODO: Consider whether to support a comment syntax. When showing data examples this may be useful.
-  //
-  lazy val hexDigits = partRawContent.flatMap { ch => if (validHexDigits.contains(ch)) List(ch) else Nil }
+  lazy val tempListBuffer = commentCompatibleFormat(validHexDigits)
+  lazy val hexDigits = tempListBuffer.mkString
 
 }
 
 class BitsDocumentPart(part: Node, parent: Document) extends DataDocumentPart(part, parent) {
-  lazy val bitDigits = {
-    val res = partRawContent.split("[^01]").mkString
-    res
-  }
+  val validBits = "01"
+
+  lazy val tempListBuffer = commentCompatibleFormat(validBits)
+  lazy val bitDigits = tempListBuffer.mkString
 
   lazy val dataBits = partByteOrder match {
     case LTR => {
@@ -2363,6 +2360,35 @@ sealed abstract class DocumentPart(part: Node, parent: Document) {
       res
     }
   }.trim.toUpperCase()
+
+  /*
+  * Description: Compare ByteDocumentPart/BitsDocumentPart string to a string of valid characters.
+  *              If the string runs into non-valid characters, skip over them.
+  *              If the string runs into "//", any character following it will be skipped (including valid ones).
+  *              Characters on a new line will be considered again, unless they are found after a "//"
+  * Parameters: String containing the acceptable characters (0,1 for bits) (0-9,A-F,a-f for bytes)
+  * Return: ListBuffer[Char] of the accepted characters from the ByteDocumentPart/BitsDocumentPart element
+  */
+  def commentCompatibleFormat(validCharacters: String) : ListBuffer[Char] = {
+    val tempListBuffer = new ListBuffer[Char]()
+    var noCommentBool = true
+
+    for (i <- 0 to partRawContent.length()-1){
+      //Check if valid
+      if(noCommentBool && validCharacters.contains(partRawContent(i))){
+        tempListBuffer += partRawContent(i)
+      }
+      else if(partRawContent(i) == '/' && i < partRawContent.length()-1){
+        if(partRawContent(i+1) == '/'){
+          noCommentBool = false
+        }
+      }
+      else if(partRawContent(i) == '\n'){
+        noCommentBool = true
+      }
+    }
+    tempListBuffer
+  }
 
 }
 
