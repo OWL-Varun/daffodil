@@ -85,7 +85,7 @@ object TestInfosetFree {
     }
 
     // now walk the parse and unparse infosets and convert them to Scala XML
-    // with the showFreedInfoset set 
+    // with the showFreedInfoset set
 
     def docToXML(doc: DIDocument): scala.xml.Node = {
       val detailedOutputter = new ScalaXMLInfosetOutputter(
@@ -98,14 +98,14 @@ object TestInfosetFree {
         walkHidden = true, // let's ensure any hidden elements are free
         ignoreBlocks = true, // there should be no blocks, but ignore them just to be sure
         releaseUnneededInfoset = false) // do not free the infoset
-      infosetWalker.walk(lastWalk = true)
+      infosetWalker.walk(lastWalk = true, "none")
 
       detailedOutputter.getResult()
     }
 
     val parseDoc = parseResult.resultState.asInstanceOf[PState].infoset.asInstanceOf[DIDocument]
     val unparseDoc = unparseResult.resultState.asInstanceOf[UStateMain].documentElement
-  
+
     val parseXML = docToXML(parseDoc)
     val unparseXML = docToXML(unparseDoc)
 
@@ -113,8 +113,8 @@ object TestInfosetFree {
       fail("parse and unparse XML did not match, infoset not freed the same")
     }
 
-    parseXML 
-  } 
+    parseXML
+  }
 }
 
 class TestInfosetFree {

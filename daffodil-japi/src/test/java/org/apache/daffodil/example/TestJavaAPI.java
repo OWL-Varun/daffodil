@@ -262,7 +262,7 @@ public class TestJavaAPI {
 
     /**
      * Verify that we can detect when the parse did not consume all the data.
-     * 
+     *
      * @throws IOException
      */
     @Test
@@ -393,7 +393,7 @@ public class TestJavaAPI {
     /***
      * Verify that the compiler throws a FileNotFound exception when fed a list
      * of schema files that do not exist.
-     * 
+     *
      * @throws IOException
      */
     @Test
@@ -415,7 +415,7 @@ public class TestJavaAPI {
     /**
      * Tests a user submitted case where the XML appears to be serializing odd
      * xml entities into the output.
-     * 
+     *
      * @throws IOException
      */
     @Test
@@ -452,7 +452,7 @@ public class TestJavaAPI {
      * that this test uses double newline as a terminator for the first element
      * in the sequence rather than double newline as a separator for the
      * sequence
-     * 
+     *
      * @throws IOException
      */
     @Test
@@ -875,7 +875,8 @@ public class TestJavaAPI {
         ByteArrayOutputStream xmlBos = new ByteArrayOutputStream();
         XMLTextInfosetOutputter outputter = new XMLTextInfosetOutputter(xmlBos, true);
         ParseResult res = dp.parse(disDP, outputter);
-        String infosetDPString = xmlBos.toString();
+        String infosetDPString = xmlBos.toString();     //To String then compare this string to phony epxected
+
 
         org.jdom2.input.sax.SAXHandler contentHandler = new org.jdom2.input.sax.SAXHandler();
         SAXErrorHandlerForJAPITest errorHandler = new SAXErrorHandlerForJAPITest();
@@ -930,7 +931,6 @@ public class TestJavaAPI {
         assertTrue(saxUr.getDiagnostics().isEmpty());
         assertEquals("42", unparseBos.toString());
     }
-
 
     @Test
     public void testJavaAPI21() throws IOException, ClassNotFoundException {
@@ -1176,7 +1176,7 @@ public class TestJavaAPI {
         TestInfosetEvent expectedEvents[] = {
             TestInfosetEvent.startDocument(),
             TestInfosetEvent.startComplex("e1", "http://example.com"),
-            TestInfosetEvent.startSimple("e2", "http://example.com", expectedData),
+            TestInfosetEvent.startSimple("e2", "http://example.com", expectedData, "none"),     //Elem 2 doesn't match bc of 'none'
             TestInfosetEvent.endSimple("e2", "http://example.com"),
             TestInfosetEvent.endComplex("e1", "http://example.com"),
             TestInfosetEvent.endDocument()
@@ -1191,11 +1191,49 @@ public class TestJavaAPI {
         java.io.FileInputStream fis = new java.io.FileInputStream(file);
         InputSourceDataInputStream dis = new InputSourceDataInputStream(fis);
         TestInfosetOutputter outputter = new TestInfosetOutputter();
-        ParseResult pr = dp.parse(dis, outputter);
+        ParseResult pr = dp.parse(dis, outputter);                                              //Array created here? Elem 2 doesn't match
 
         assertFalse(pr.isError());
         assertArrayEquals(expectedEvents, outputter.events.toArray());
-
+            /*
+            //Break this down further)
+            //StartDocument
+            assertEquals(expectedEvents[0].localName, outputter.events.get(0).localName);
+            assertEquals(expectedEvents[0].namespaceURI, outputter.events.get(0).namespaceURI);
+            assertEquals(expectedEvents[0].simpleText, outputter.events.get(0).simpleText);
+            assertEquals(expectedEvents[0].isNilled, outputter.events.get(0).isNilled);
+            assertEquals(expectedEvents[0].xmlOutputStyle, outputter.events.get(0).xmlOutputStyle);
+            //StartComplex
+            assertEquals(expectedEvents[1].localName, outputter.events.get(1).localName);
+            assertEquals(expectedEvents[1].namespaceURI, outputter.events.get(1).namespaceURI);
+            assertEquals(expectedEvents[1].simpleText, outputter.events.get(1).simpleText);
+            assertEquals(expectedEvents[1].isNilled, outputter.events.get(1).isNilled);
+            assertEquals(expectedEvents[1].xmlOutputStyle, outputter.events.get(1).xmlOutputStyle);
+            //StartSimple
+            assertEquals(expectedEvents[2].localName, outputter.events.get(2).localName);
+            assertEquals(expectedEvents[2].namespaceURI, outputter.events.get(2).namespaceURI);
+            assertEquals(expectedEvents[2].simpleText, outputter.events.get(2).simpleText);
+            assertEquals(expectedEvents[2].isNilled, outputter.events.get(2).isNilled);
+            assertEquals(expectedEvents[2].xmlOutputStyle, outputter.events.get(2).xmlOutputStyle);
+            //EndSimple
+            assertEquals(expectedEvents[3].localName, outputter.events.get(3).localName);
+            assertEquals(expectedEvents[3].namespaceURI, outputter.events.get(3).namespaceURI);
+            assertEquals(expectedEvents[3].simpleText, outputter.events.get(3).simpleText);
+            assertEquals(expectedEvents[3].isNilled, outputter.events.get(3).isNilled);
+            assertEquals(expectedEvents[3].xmlOutputStyle, outputter.events.get(3).xmlOutputStyle);
+            //EndComplex
+            assertEquals(expectedEvents[4].localName, outputter.events.get(4).localName);
+            assertEquals(expectedEvents[4].namespaceURI, outputter.events.get(4).namespaceURI);
+            assertEquals(expectedEvents[4].simpleText, outputter.events.get(4).simpleText);
+            assertEquals(expectedEvents[4].isNilled, outputter.events.get(4).isNilled);
+            assertEquals(expectedEvents[4].xmlOutputStyle, outputter.events.get(4).xmlOutputStyle);
+            //EndDocument
+            assertEquals(expectedEvents[5].localName, outputter.events.get(5).localName);
+            assertEquals(expectedEvents[5].namespaceURI, outputter.events.get(5).namespaceURI);
+            assertEquals(expectedEvents[5].simpleText, outputter.events.get(5).simpleText);
+            assertEquals(expectedEvents[5].isNilled, outputter.events.get(5).isNilled);
+            assertEquals(expectedEvents[5].xmlOutputStyle, outputter.events.get(5).xmlOutputStyle);
+            */
         java.io.ByteArrayOutputStream bos = new java.io.ByteArrayOutputStream();
         java.nio.channels.WritableByteChannel wbc = java.nio.channels.Channels.newChannel(bos);
         TestInfosetInputter inputter = new TestInfosetInputter(expectedEvents);
@@ -1204,5 +1242,110 @@ public class TestJavaAPI {
         assertFalse(ur.isError());
         assertEquals(expectedData, bos.toString());
     }
+/*
+Thoughts on 25:
+    The contents of 2 match however it says:[error] Test org.apache.daffodil.example.TestJavaAPI.testJavaAPI25 failed: org.junit.internal.ArrayComparisonFailure: arrays first differed at element [2]; expected:<org.apache.daffodil.example.TestInfosetEvent@281f7bf6> but was:<org.apache.daffodil.example.TestInfosetEvent@747d33c8>, took 0.104 sec
 
+    Solution:
+    This was only bc the test used "none" where as the outputter has "prettyprintsafe" as its default
+
+    Try:
+    1. Change your code back in XMLTextInfo and test again to see if the test even passed originally
+        Turns out main compiles completely fine....
+        This means the object == TestInfosetEvent argument doesn't exist. So that means 2. isn't the right path to take.
+    2. The issue might the toArray call causing the actual to change types to Object.
+        Can work around this by removing toArray() and calling many assertEquals()
+
+    Going to go with step 2 just to see what the next error is.
+*/
+
+
+    @Test
+    public void testJavaAPICDATA1() throws IOException, ClassNotFoundException {
+        org.apache.daffodil.japi.Compiler c = Daffodil.compiler().withTunable("xmlOutputStyle","prettyPrintSafe");
+        java.io.File schemaFile = getResource("/test/japi/mySchemaCDATA1.dfdl.xsd");
+        ProcessorFactory pf = c.compileFile(schemaFile);
+        DataProcessor dp = pf.onPath("/");
+        dp = reserializeDataProcessor(dp);
+        DaffodilParseXMLReader parseXMLReader = dp.newXMLReaderInstance();
+
+        java.io.File file = getResource("/test/japi/myDataCDATA1.dat");
+        java.io.FileInputStream fisDP = new java.io.FileInputStream(file);
+        java.io.FileInputStream fisSAX = new java.io.FileInputStream(file);
+        InputSourceDataInputStream disDP = new InputSourceDataInputStream(fisDP);
+        ByteArrayOutputStream xmlBos = new ByteArrayOutputStream();
+        XMLTextInfosetOutputter outputter = new XMLTextInfosetOutputter(xmlBos, true);
+        ParseResult res = dp.parse(disDP, outputter);
+        String infosetDPString = xmlBos.toString();
+        String[] actual = infosetDPString.split("tns:foo");
+
+        assertEquals(" xmlns:tns=\"http://example.com\"><![CDATA[NO_WHITESPACE_AT_ALL]]></", actual[1]);
+    }
+
+    @Test
+    public void testJavaAPICDATA2() throws IOException, ClassNotFoundException {
+        org.apache.daffodil.japi.Compiler c = Daffodil.compiler().withTunable("xmlOutputStyle","prettyPrintSafe");
+        java.io.File schemaFile = getResource("/test/japi/mySchemaCDATA2.dfdl.xsd");
+        ProcessorFactory pf = c.compileFile(schemaFile);
+        DataProcessor dp = pf.onPath("/");
+        dp = reserializeDataProcessor(dp);
+        DaffodilParseXMLReader parseXMLReader = dp.newXMLReaderInstance();
+
+        java.io.File file = getResource("/test/japi/myDataCDATA2.dat");
+        java.io.FileInputStream fisDP = new java.io.FileInputStream(file);
+        java.io.FileInputStream fisSAX = new java.io.FileInputStream(file);
+        InputSourceDataInputStream disDP = new InputSourceDataInputStream(fisDP);
+        InputSourceDataInputStream disSAX = new InputSourceDataInputStream(fisSAX);
+        ByteArrayOutputStream xmlBos = new ByteArrayOutputStream();
+        XMLTextInfosetOutputter outputter = new XMLTextInfosetOutputter(xmlBos, true);
+        ParseResult res = dp.parse(disDP, outputter);
+        String infosetDPString = xmlBos.toString();
+        String[] actual = infosetDPString.split("tns:foo");
+
+        assertEquals(" xmlns:tns=\"http://example.com\"><![CDATA[   'some' stuff   here ]]>&#xE000;<![CDATA[ and ]]]]>&gt;<![CDATA[ even]]></", actual[1]);
+    }
+
+    @Test
+    public void testJavaAPICDATA3() throws IOException, ClassNotFoundException {
+        org.apache.daffodil.japi.Compiler c = Daffodil.compiler().withTunable("xmlOutputStyle","prettyPrintSafe");
+        java.io.File schemaFile = getResource("/test/japi/mySchemaCDATA3.dfdl.xsd");
+        ProcessorFactory pf = c.compileFile(schemaFile);
+        DataProcessor dp = pf.onPath("/");
+        dp = reserializeDataProcessor(dp);
+        DaffodilParseXMLReader parseXMLReader = dp.newXMLReaderInstance();
+
+        java.io.File file = getResource("/test/japi/myDataCDATA3.dat");
+        java.io.FileInputStream fisDP = new java.io.FileInputStream(file);
+        java.io.FileInputStream fisSAX = new java.io.FileInputStream(file);
+        InputSourceDataInputStream disDP = new InputSourceDataInputStream(fisDP);
+        ByteArrayOutputStream xmlBos = new ByteArrayOutputStream();
+        XMLTextInfosetOutputter outputter = new XMLTextInfosetOutputter(xmlBos, true);
+        ParseResult res = dp.parse(disDP, outputter);
+        String infosetDPString = xmlBos.toString();
+        String[] actual = infosetDPString.split("tns:foo");
+
+        assertEquals(" xmlns:tns=\"http://example.com\">6.892</", actual[1]);
+    }
+
+    @Test
+    public void testJavaAPICDATA4() throws IOException, ClassNotFoundException {
+        org.apache.daffodil.japi.Compiler c = Daffodil.compiler().withTunable("xmlOutputStyle","prettyPrintSafe");
+        java.io.File schemaFile = getResource("/test/japi/mySchemaCDATA4.dfdl.xsd");
+        ProcessorFactory pf = c.compileFile(schemaFile);
+        DataProcessor dp = pf.onPath("/");
+        dp = reserializeDataProcessor(dp);
+        DaffodilParseXMLReader parseXMLReader = dp.newXMLReaderInstance();
+
+        java.io.File file = getResource("/test/japi/myDataCDATA4.dat");
+        java.io.FileInputStream fisDP = new java.io.FileInputStream(file);
+        java.io.FileInputStream fisSAX = new java.io.FileInputStream(file);
+        InputSourceDataInputStream disDP = new InputSourceDataInputStream(fisDP);
+        ByteArrayOutputStream xmlBos = new ByteArrayOutputStream();
+        XMLTextInfosetOutputter outputter = new XMLTextInfosetOutputter(xmlBos, true);
+        ParseResult res = dp.parse(disDP, outputter);
+        String infosetDPString = xmlBos.toString();
+        String[] actual = infosetDPString.split("tns:foo");
+
+        assertEquals(" xmlns:tns=\"http://example.com\"><![CDATA[this contains a CRLF ]]>&#xE00D;<![CDATA[\nline ending]]></", actual[1] );
+    }
 }

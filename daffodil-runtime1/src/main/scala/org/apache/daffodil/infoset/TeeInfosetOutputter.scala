@@ -36,12 +36,12 @@ class TeeInfosetOutputter(outputters: InfosetOutputter*)
     outputters.foreach { _.reset() }
   }
 
-  override def startSimple(simple: DISimple): Boolean = {
+  override def startSimple(simple: DISimple, xmlOutputStyle: String): Boolean = {
     outputters.foldLeft(true) { case (res, outputter) =>
-      res & outputter.startSimple(simple)
+      res & outputter.startSimple(simple, xmlOutputStyle)
     }
   }
-  
+
   override def endSimple(simple: DISimple): Boolean = {
     outputters.foldLeft(true) { case (res, outputter) =>
       res & outputter.endSimple(simple)

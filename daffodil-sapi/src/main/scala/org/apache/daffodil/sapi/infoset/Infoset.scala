@@ -52,7 +52,7 @@ abstract class InfosetInputter extends SInfosetInputter {
   /**
    * Return the current infoset inputter event type
    */
-  def getEventType(): InfosetInputterEventType 
+  def getEventType(): InfosetInputterEventType
 
   /**
    * Get the local name of the current event. This will only be called when the
@@ -146,7 +146,7 @@ abstract class InfosetOutputter extends SInfosetOutputter {
    *         future calls to the InfosetOutputter
    */
 
-  def startSimple(diSimple: DISimple): Boolean
+  def startSimple(diSimple: DISimple, xmlOutputStyle: String): Boolean
 
   /**
    * Called by Daffodil internals to signify the end of a simple element.
@@ -211,7 +211,7 @@ abstract class InfosetOutputter extends SInfosetOutputter {
  * classes, we can document these classes and have a small and clean scaladoc.
  */
 
- 
+
 /**
  * [[InfosetOutputter]] to build an infoset represented as a scala.xml.Node
  *
@@ -477,7 +477,7 @@ abstract class InfosetOutputterProxy extends InfosetOutputter {
   override def reset(): Unit = infosetOutputter.reset()
   override def startDocument(): Boolean = infosetOutputter.startDocument()
   override def endDocument(): Boolean = infosetOutputter.endDocument()
-  override def startSimple(diSimple: DISimple): Boolean = infosetOutputter.startSimple(diSimple)
+  override def startSimple(diSimple: DISimple, xmlOutputStyle: String): Boolean = infosetOutputter.startSimple(diSimple, xmlOutputStyle)
   override def endSimple(diSimple: DISimple): Boolean = infosetOutputter.endSimple(diSimple)
   override def startComplex(diComplex: DIComplex): Boolean = infosetOutputter.startComplex(diComplex)
   override def endComplex(diComplex: DIComplex): Boolean = infosetOutputter.endComplex(diComplex)

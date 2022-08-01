@@ -48,7 +48,7 @@ class JDOMInfosetOutputter extends InfosetOutputter
     true
   }
 
-  def startSimple(diSimple: DISimple): Boolean = {
+  def startSimple(diSimple: DISimple, xmlOutputStyle: String): Boolean = {
 
     val elem = createElement(diSimple)
 

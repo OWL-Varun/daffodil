@@ -53,13 +53,14 @@ public class TestInfosetOutputter extends InfosetOutputter {
     }
 
     @Override
-    public boolean startSimple(DISimple diSimple) {
+    public boolean startSimple(DISimple diSimple, String xmlOutputStyle) {
         events.add(
             TestInfosetEvent.startSimple(
                 diSimple.erd().name(),
                 diSimple.erd().namedQName().namespace().toString(),
                 diSimple.dataValueAsString(),
-                diSimple.erd().isNillable() ? diSimple.isNilled() : null));
+                diSimple.erd().isNillable() ? diSimple.isNilled() : null,
+                xmlOutputStyle));
         return true;
     }
 

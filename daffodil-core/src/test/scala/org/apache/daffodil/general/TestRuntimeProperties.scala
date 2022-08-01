@@ -38,8 +38,8 @@ import org.apache.daffodil.util.TestUtils
 class RedactingScalaXMLInfosetOutputter
   extends ScalaXMLInfosetOutputter {
 
-  override def startSimple(diSimple: DISimple): Boolean = {
-    super.startSimple(diSimple)
+  override def startSimple(diSimple: DISimple, xmlOutputStyle: String): Boolean = {
+    super.startSimple(diSimple, xmlOutputStyle)
 
     val runtimeProperties = diSimple.erd.runtimeProperties
 
@@ -131,7 +131,7 @@ class TestRuntimeProperties {
     val ur = dp.unparse(inputter, output)
 
     assertFalse(ur.isError)
-    
+
     val actual = output.toString("UTF-8")
     assertEquals(expected, actual)
   }

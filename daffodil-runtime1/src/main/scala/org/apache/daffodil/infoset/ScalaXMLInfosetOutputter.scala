@@ -75,7 +75,7 @@ class ScalaXMLInfosetOutputter(showFormatInfo: Boolean = false, showFreedInfo: B
     freedAttr
   }
 
-  def startSimple(diSimple: DISimple): Boolean = {
+  def startSimple(diSimple: DISimple, xmlOutputStyle: String): Boolean = {
 
     val attributes = getAttributes(diSimple)
 
@@ -84,6 +84,7 @@ class ScalaXMLInfosetOutputter(showFormatInfo: Boolean = false, showFreedInfo: B
         val text =
           if (diSimple.erd.optPrimType.get.isInstanceOf[NodeInfo.String.Kind]) {
             remapped(diSimple.dataValueAsString)
+            //construct node sequence of pcdata nodes(unescaped text)/entity references nodes
           } else {
             diSimple.dataValueAsString
           }

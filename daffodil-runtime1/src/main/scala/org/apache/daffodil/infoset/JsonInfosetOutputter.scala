@@ -97,7 +97,7 @@ class JsonInfosetOutputter private (writer: java.io.Writer, pretty: Boolean, dum
   }
 
 
-  override def startSimple(simple: DISimple): Boolean = {
+  override def startSimple(simple: DISimple, xmlOutputStyle: String): Boolean = {
     startNode()
     startElement(simple)
     if (!isNilled(simple) && simple.hasValue) {

@@ -40,6 +40,7 @@ case class TestInfosetEvent(
   namespaceURI: String = null,
   simpleText: String = null,
   isNilled: MaybeBoolean = MaybeBoolean.Nope,
+  xmlOutputStyle: String = null,
 )
 
 object TestInfosetEvent {
@@ -50,8 +51,8 @@ object TestInfosetEvent {
   def startComplex(name: String, namespace: String, isNilled: MaybeBoolean = MaybeBoolean.Nope) =
     TestInfosetEvent(StartElement, name, namespace, null, isNilled)
 
-  def startSimple(name: String, namespace: String, text: String, isNilled: MaybeBoolean = MaybeBoolean.Nope) =
-    TestInfosetEvent(StartElement, name, namespace, text, isNilled)
+  def startSimple(name: String, namespace: String, text: String, isNilled: MaybeBoolean = MaybeBoolean.Nope, xmlOutputStyle: String) =
+    TestInfosetEvent(StartElement, name, namespace, text, isNilled, xmlOutputStyle)
 
   def endComplex(name: String, namespace: String) =
     TestInfosetEvent(EndElement, name, namespace)
@@ -100,13 +101,14 @@ case class TestInfosetOutputter() extends InfosetOutputter {
     true
   }
 
-  override def startSimple(diSimple: DISimple): Boolean = {
+  override def startSimple(diSimple: DISimple, xmlOutputStyle: String): Boolean = {
     events.append(
       TestInfosetEvent.startSimple(
         diSimple.erd.name,
         diSimple.erd.namedQName.namespace,
         diSimple.dataValueAsString,
-        if (diSimple.erd.isNillable) MaybeBoolean(diSimple.isNilled) else MaybeBoolean.Nope))
+        if (diSimple.erd.isNillable) MaybeBoolean(diSimple.isNilled) else MaybeBoolean.Nope,
+        xmlOutputStyle))
     true
   }
 

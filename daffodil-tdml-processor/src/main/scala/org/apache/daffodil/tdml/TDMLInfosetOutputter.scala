@@ -55,8 +55,8 @@ class TDMLInfosetOutputter() extends InfosetOutputter {
     outputters.foreach(_.reset())
   }
 
-  override def startSimple(simple: DISimple): Boolean = {
-    if (!outputters.forall(_.startSimple(simple)))
+  override def startSimple(simple: DISimple, xmlOutputStyle: String): Boolean = {
+    if (!outputters.forall(_.startSimple(simple, xmlOutputStyle)))
       throw TDMLException("startSimple failed", Some(implString))
     true
   }

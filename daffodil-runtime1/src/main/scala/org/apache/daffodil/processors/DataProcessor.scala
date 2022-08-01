@@ -436,7 +436,7 @@ class DataProcessor private (
     }
 
     val rootERD = ssrd.elementRuntimeData
-    val state = PState.createInitialPState(rootERD, input, outputter, this, areDebugging)
+    val state = PState.createInitialPState(rootERD, input, outputter, this, areDebugging)     //TUNABLES loaded into State here
 
     if (areDebugging) {
       Assert.invariant(optDebugger.isDefined)
@@ -454,7 +454,7 @@ class DataProcessor private (
       // root node. So mark it as final and do one last walk to end the
       // document.
       state.infoset.contents(0).isFinal = true
-      state.walker.walk(lastWalk = true)
+      state.walker.walk(lastWalk = true, state.tunable.xmlOutputStyle)      //state.tunable.xmlOutputStyle not being set correctly
       Assert.invariant(state.walker.isFinished)
 
       // validate infoset, errors are added to the PState diagnostics

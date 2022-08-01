@@ -36,13 +36,15 @@ public class TestInfosetEvent {
     // non-nullable elements). Boolean.TRUE or Boolean.FALSE means it is
     // nullable and has the given value
     Boolean isNilled;
+    String xmlOutputStyle;
 
-    public TestInfosetEvent(InfosetInputterEventType _eventType, String _localName, String _namespaceURI, String _simpleText, Boolean _isNilled) {
+    public TestInfosetEvent(InfosetInputterEventType _eventType, String _localName, String _namespaceURI, String _simpleText, Boolean _isNilled, String _xmlOutputStyle) {
         this.eventType = _eventType;
         this.localName = _localName;
         this.namespaceURI = _namespaceURI;
         this.simpleText = _simpleText;
         this.isNilled = _isNilled;
+        this.xmlOutputStyle = _xmlOutputStyle;
     }
 
     public boolean equals(Object o) {
@@ -55,12 +57,13 @@ public class TestInfosetEvent {
             java.util.Objects.equals(this.localName, that.localName) &&
             java.util.Objects.equals(this.namespaceURI, that.namespaceURI) &&
             java.util.Objects.equals(this.simpleText, that.simpleText) &&
-            java.util.Objects.equals(this.isNilled, that.isNilled);
+            java.util.Objects.equals(this.isNilled, that.isNilled) &&
+            java.util.Objects.equals(this.xmlOutputStyle, that.xmlOutputStyle);
 
     }
 
     static TestInfosetEvent startDocument() {
-        return new TestInfosetEvent (StartDocument$.MODULE$, null, null, null, null);
+        return new TestInfosetEvent (StartDocument$.MODULE$, null, null, null, null, null);
     }
 
     static TestInfosetEvent startComplex(String name, String namespace) {
@@ -68,26 +71,26 @@ public class TestInfosetEvent {
     }
 
     static TestInfosetEvent startComplex(String name, String namespace, Boolean isNilled) {
-        return new TestInfosetEvent (StartElement$.MODULE$, name, namespace, null, isNilled);
+        return new TestInfosetEvent (StartElement$.MODULE$, name, namespace, null, isNilled, null);
     }
 
-    static TestInfosetEvent startSimple(String name, String namespace, String text) {
-        return startSimple(name, namespace, text, null);
+    static TestInfosetEvent startSimple(String name, String namespace, String text, String xmlOutputStyle) {
+        return startSimple(name, namespace, text, null, xmlOutputStyle);
     }
 
-    static TestInfosetEvent startSimple(String name, String namespace, String text, Boolean isNilled) {
-        return new TestInfosetEvent (StartElement$.MODULE$, name, namespace, text, isNilled);
+    static TestInfosetEvent startSimple(String name, String namespace, String text, Boolean isNilled, String xmlOutputStyle) {
+        return new TestInfosetEvent (StartElement$.MODULE$, name, namespace, text, isNilled, xmlOutputStyle);
     }
 
     static TestInfosetEvent endComplex(String name, String namespace) {
-        return new TestInfosetEvent (EndElement$.MODULE$, name, namespace, null, null);
+        return new TestInfosetEvent (EndElement$.MODULE$, name, namespace, null, null, null);
     }
 
     static TestInfosetEvent endSimple(String name, String namespace) {
-        return new TestInfosetEvent (EndElement$.MODULE$, name, namespace, null, null);
+        return new TestInfosetEvent (EndElement$.MODULE$, name, namespace, null, null, null);
     }
 
     static TestInfosetEvent endDocument() {
-        return new TestInfosetEvent (EndDocument$.MODULE$, null, null, null, null);
+        return new TestInfosetEvent (EndDocument$.MODULE$, null, null, null, null, null);
     }
 }

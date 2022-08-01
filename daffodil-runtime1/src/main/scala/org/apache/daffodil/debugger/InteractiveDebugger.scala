@@ -435,7 +435,7 @@ class InteractiveDebugger(runner: InteractiveDebuggerRunner, eCompilers: Express
     }
   }
 
-  private def infosetToString(ie: InfosetElement): String = {
+  private def infosetToString(ie: InfosetElement, xmlOutputStyle: String): String = {
     val bos = new java.io.ByteArrayOutputStream()
     val xml = new XMLTextInfosetOutputter(bos, true)
     val iw = InfosetWalker(
@@ -444,12 +444,12 @@ class InteractiveDebugger(runner: InteractiveDebuggerRunner, eCompilers: Express
       walkHidden = !DebuggerConfig.removeHidden,
       ignoreBlocks = true,
       releaseUnneededInfoset = false)
-    iw.walk(lastWalk = true)
+    iw.walk(lastWalk = true, xmlOutputStyle)
     bos.toString("UTF-8")
   }
 
-  private def debugPrettyPrintXML(ie: InfosetElement): Unit = {
-    val infosetString = infosetToString(ie)
+  private def debugPrettyPrintXML(ie: InfosetElement, xmlOutputStyle: String): Unit = {
+    val infosetString = infosetToString(ie, xmlOutputStyle)
     debugPrintln(infosetString)
   }
 
@@ -987,10 +987,10 @@ class InteractiveDebugger(runner: InteractiveDebuggerRunner, eCompilers: Express
             debugPrintln(_)
           }
           res match {
-            case ie: InfosetElement => debugPrettyPrintXML(ie)
+            case ie: InfosetElement => debugPrettyPrintXML(ie, state.tunable.xmlOutputStyle)
             case nodeSeq: Seq[Any] => nodeSeq.foreach { a =>
               a match {
-                case ie: InfosetElement => debugPrettyPrintXML(ie)
+                case ie: InfosetElement => debugPrettyPrintXML(ie, state.tunable.xmlOutputStyle)
                 case _ => debugPrintln(a)
               }
             }
@@ -1024,7 +1024,7 @@ class InteractiveDebugger(runner: InteractiveDebuggerRunner, eCompilers: Express
               //
               // Displays the empty element since it has no value.
               //
-              debugPrettyPrintXML(nd.diElement)
+              debugPrettyPrintXML(nd.diElement, state.tunable.xmlOutputStyle)
               state.suppressDiagnosticAndSucceed(r)
             }
             case _ => throw r
@@ -1548,7 +1548,7 @@ class InteractiveDebugger(runner: InteractiveDebuggerRunner, eCompilers: Express
                 debugPrintln("No Infoset", "  ")
               }
               case _ => {
-                val infosetString = infosetToString(node)
+                val infosetString = infosetToString(node, state.tunable.xmlOutputStyle)
                 val lines = infosetString.split("\n")
 
                 val dropCount =

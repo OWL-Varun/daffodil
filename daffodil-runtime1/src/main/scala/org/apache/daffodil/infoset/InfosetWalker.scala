@@ -236,7 +236,7 @@ class InfosetWalker private (
    * walk() will be called, the lastWalk parameter should be set to true, which
    * will cause walk() to not skip any steps.
    */
-  def walk(lastWalk: Boolean = false): Unit = {
+  def walk(lastWalk: Boolean = false, xmlOutputStyle: String): Unit = {
     Assert.usage(!finished)
 
     if (walkSkipRemaining > 0 && !lastWalk) {
@@ -244,7 +244,7 @@ class InfosetWalker private (
       walkSkipRemaining -= 1
     } else {
       // no more skips or this is the last walk, so try to take a step
-      var canTakeAnotherStep = maybeDoStep()
+      var canTakeAnotherStep = maybeDoStep(xmlOutputStyle)
 
       walkSkipSize =
         if (canTakeAnotherStep) {
@@ -267,7 +267,7 @@ class InfosetWalker private (
 
       // continue taking steps as far as we can
       while (canTakeAnotherStep) {
-        canTakeAnotherStep = maybeDoStep()
+        canTakeAnotherStep = maybeDoStep(xmlOutputStyle)
       }
 
     }
@@ -278,7 +278,7 @@ class InfosetWalker private (
    * be take, false if there was a block or something that would prevent
    * another step from being taken.
    */
-  private def maybeDoStep(): Boolean = {
+  private def maybeDoStep(xmlOutputStyle: String): Boolean = {
     val containerNode = containerNodeStack.top
     val containerIndex = containerIndexStack.top
 
@@ -294,7 +294,7 @@ class InfosetWalker private (
       // state to determine if we can actually create events for the current
       // infoset node and take a step.
       if (ignoreBlocks || canTakeStep(containerNode, containerIndex)) {
-        infosetWalkerStepMove(containerNode, containerIndex)
+        infosetWalkerStepMove(containerNode, containerIndex, xmlOutputStyle)
         // took a step, more steps are alloed
         true
       } else {
@@ -351,7 +351,7 @@ class InfosetWalker private (
 
     } else {
       // no blocks on the container, figure out if we can take a step for the
-      // element and the child index of this container 
+      // element and the child index of this container
 
       val children = containerNode.contents
 
@@ -435,7 +435,7 @@ class InfosetWalker private (
    * Output start/end events for DIComplex/DIArray/DISimple, and mutate state
    * so we are looking at the next node in the infoset.
    */
-  private def infosetWalkerStepMove(containerNode: DINode, containerIndex: Int): Unit = {
+  private def infosetWalkerStepMove(containerNode: DINode, containerIndex: Int, xmlOutputStyle: String): Unit = {
     val children = containerNode.contents
 
     if (containerIndex < children.size) {
@@ -452,7 +452,7 @@ class InfosetWalker private (
       if (child.isSimple) {
         if (!child.isHidden || walkHidden) {
           val simple = child.asInstanceOf[DISimple]
-          outputter.startSimple(simple)
+          outputter.startSimple(simple, xmlOutputStyle)       //Value here needs to change. xmlOutputStyle
           outputter.endSimple(simple)
         }
         // now we can remove this simple element to free up memory

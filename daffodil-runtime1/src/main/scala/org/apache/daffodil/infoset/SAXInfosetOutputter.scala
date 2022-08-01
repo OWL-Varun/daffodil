@@ -71,7 +71,7 @@ class SAXInfosetOutputter(xmlReader: DFDL.DaffodilParseXMLReader,
     }
   }
 
-  override def startSimple(diSimple: DISimple): Boolean = {
+  override def startSimple(diSimple: DISimple, xmlOutputStyle: String): Boolean = {
     val contentHandler = xmlReader.getContentHandler
     if (contentHandler != null) {
       try {

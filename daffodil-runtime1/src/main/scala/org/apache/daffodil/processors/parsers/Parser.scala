@@ -197,7 +197,7 @@ class ChoiceParser(
     var diagnostics: Seq[Diagnostic] = Nil
     var i = 0
     val numAlternatives = childParsers.length
-    
+
     var successfullyParsedChildBranch = false
 
     while (!successfullyParsedChildBranch && i < numAlternatives) {
@@ -247,7 +247,7 @@ class ChoiceParser(
         }
       }
 
-      pstate.walker.walk()
+      pstate.walker.walk(xmlOutputStyle = pstate.tunable.xmlOutputStyle)
     }
 
     if (!successfullyParsedChildBranch) {

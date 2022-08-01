@@ -54,6 +54,7 @@ import org.apache.daffodil.sapi.infoset.ScalaXMLInfosetOutputter
 import org.apache.daffodil.sapi.infoset.XMLTextInfosetOutputter
 import org.apache.daffodil.sapi.io.InputSourceDataInputStream
 
+import org.apache.daffodil.util.MaybeBoolean
 
 object TestScalaAPI {
   /**
@@ -934,7 +935,7 @@ class TestScalaAPI {
 
     val saxUr = unparseContentHandler.getUnparseResult
     wbc.close()
-    
+
     val saxErr = saxUr.isError()
     assertFalse(saxErr)
     assertTrue(saxUr.getDiagnostics.isEmpty)
@@ -1135,7 +1136,7 @@ class TestScalaAPI {
       val expectedEvents = Array(
         TestInfosetEvent.startDocument(),
         TestInfosetEvent.startComplex("e1", "http://example.com"),
-        TestInfosetEvent.startSimple("e2", "http://example.com", expectedData),
+        TestInfosetEvent.startSimple("e2", "http://example.com", expectedData, MaybeBoolean.Nope, "none"),
         TestInfosetEvent.endSimple("e2", "http://example.com"),
         TestInfosetEvent.endComplex("e1", "http://example.com"),
         TestInfosetEvent.endDocument()

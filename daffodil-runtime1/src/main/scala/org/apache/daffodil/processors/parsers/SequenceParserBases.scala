@@ -223,7 +223,7 @@ abstract class SequenceParserBase(
                   val lastArrayElem = lastChild.maybeLastChild
                   if (lastArrayElem.isDefined) {
                     lastArrayElem.get.isFinal = true
-                    pstate.walker.walk()
+                    pstate.walker.walk(xmlOutputStyle = pstate.tunable.xmlOutputStyle)
                   }
                 }
               }
@@ -365,7 +365,7 @@ abstract class SequenceParserBase(
         // progress. So we don't even bother calling walk() in this case.
         if (newLastChildNode.isDefined) {
           newLastChildNode.get.isFinal = true
-          if (isOrdered) pstate.walker.walk()
+          if (isOrdered) pstate.walker.walk(xmlOutputStyle = pstate.tunable.xmlOutputStyle)
         }
 
         scpIndex += 1
@@ -385,7 +385,7 @@ abstract class SequenceParserBase(
 
         // we've unblocked the unordered sequence, try walking to output
         // everything we've created
-        pstate.walker.walk()
+        pstate.walker.walk(xmlOutputStyle = pstate.tunable.xmlOutputStyle)
       }
 
       if (child ne null) child.finalChecks(pstate, resultOfTry, priorResultOfTry)
@@ -408,7 +408,7 @@ abstract class SequenceParserBase(
     // this PoU lets us know if a discriminator tells us to stop trying more
     // unordered sequence children
     val needsPoU =
-      !isOrdered || 
+      !isOrdered ||
       (
         (parser.pouStatus eq PoUStatus.HasPoU) &&
         !roStatus.isInstanceOf[RequiredOptionalStatus.Required]

@@ -25,7 +25,7 @@ import org.apache.daffodil.dpath.NodeInfo
 import org.w3c.dom.Document
 import org.w3c.dom.Element
 import org.w3c.dom.Node
-import javax.xml.parsers.DocumentBuilderFactory; 
+import javax.xml.parsers.DocumentBuilderFactory;
 
 class W3CDOMInfosetOutputter extends InfosetOutputter
     with XMLInfosetOutputter {
@@ -56,7 +56,7 @@ class W3CDOMInfosetOutputter extends InfosetOutputter
     true
   }
 
-  def startSimple(diSimple: DISimple): Boolean = {
+  def startSimple(diSimple: DISimple, xmlOutputStyle: String): Boolean = {
 
     val elem = createElement(diSimple)
 
@@ -64,6 +64,7 @@ class W3CDOMInfosetOutputter extends InfosetOutputter
       val text =
         if (diSimple.erd.optPrimType.get.isInstanceOf[NodeInfo.String.Kind]) {
           remapped(diSimple.dataValueAsString)
+          //w3cdom outputter
         } else {
           diSimple.dataValueAsString
         }

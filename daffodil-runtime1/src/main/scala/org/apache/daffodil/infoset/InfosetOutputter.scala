@@ -54,11 +54,12 @@ trait InfosetOutputter {
    * @param diSimple the simple element that is started. Various fields of
    *                 DISimple can be accessed to determine things like the
    *                 value, nil, name, namespace, etc.
+   * @param xmlOutputStyle the string that determines how to print data.
    * @return true on sucess, false if there was an error and Daffodil should stop all
    *         future calls to the InfosetOutputter
    */
 
-  def startSimple(diSimple: DISimple): Boolean
+  def startSimple(diSimple: DISimple, xmlOutputStyle: String): Boolean
 
   /**
    * Called by Daffodil internals to signify the end of a simple element.

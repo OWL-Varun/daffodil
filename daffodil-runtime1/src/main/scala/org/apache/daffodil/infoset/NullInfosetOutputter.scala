@@ -27,7 +27,7 @@ class NullInfosetOutputter() extends InfosetOutputter {
     //do nothing
   }
 
-  override def startSimple(simple: DISimple): Boolean = true
+  override def startSimple(simple: DISimple, xmlOutputStyle: String): Boolean = true
   override def endSimple(simple: DISimple): Boolean = true
 
   override def startComplex(complex: DIComplex): Boolean = true

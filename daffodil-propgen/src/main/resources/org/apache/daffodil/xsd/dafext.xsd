@@ -26,7 +26,7 @@
   xmlns:dfdlx="http://www.ogf.org/dfdl/dfdl-1.0/extensions"
   attributeFormDefault="unqualified"
   elementFormDefault="qualified">
-  
+
   <xs:import namespace="http://www.ogf.org/dfdl/dfdl-1.0/extensions"/>
   <xs:import namespace="urn:ogf:dfdl:2013:imp:daffodil.apache.org:2018:int"/>
 
@@ -558,6 +558,17 @@
               <xs:minInclusive value="1" />
             </xs:restriction>
           </xs:simpleType>
+        </xs:element>
+        <xs:element name="xmlOutputStyle" type="xs:string" default="none" minOccurs="0">
+          <xs:annotation>
+            <xs:documentation>
+              values is a whitespace separated list of tokens drawn from this set.
+              Values are:
+              - none: (Current behavior - ok if data is not being pretty printed, or will not be re-read in, or if whitespace is fungible in the actual data format),
+              - prettyPrintSafe: preserves the XML Infoset exactly including whitespace characters. This XML can be pretty printed without indentation changes modifying element values.
+              - other values are reserved for future use.
+            </xs:documentation>
+          </xs:annotation>
         </xs:element>
       </xs:all>
     </xs:complexType>
