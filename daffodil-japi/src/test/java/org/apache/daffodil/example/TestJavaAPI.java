@@ -1267,11 +1267,9 @@ Thoughts on 25:
         ProcessorFactory pf = c.compileFile(schemaFile);
         DataProcessor dp = pf.onPath("/");
         dp = reserializeDataProcessor(dp);
-        DaffodilParseXMLReader parseXMLReader = dp.newXMLReaderInstance();
 
         java.io.File file = getResource("/test/japi/myDataCDATA1.dat");
         java.io.FileInputStream fisDP = new java.io.FileInputStream(file);
-        java.io.FileInputStream fisSAX = new java.io.FileInputStream(file);
         InputSourceDataInputStream disDP = new InputSourceDataInputStream(fisDP);
         ByteArrayOutputStream xmlBos = new ByteArrayOutputStream();
         XMLTextInfosetOutputter outputter = new XMLTextInfosetOutputter(xmlBos, true);
@@ -1280,6 +1278,8 @@ Thoughts on 25:
         String[] actual = infosetDPString.split("tns:foo");
 
         assertEquals(" xmlns:tns=\"http://example.com\"><![CDATA[NO_WHITESPACE_AT_ALL]]></", actual[1]);
+        //Would this be a better way to run the test as to not confuse other devs?
+        //assertTrue(actual[1].contains("<![CDATA[NO_WHITESPACE_AT_ALL]]>"));
     }
 
     @Test
@@ -1289,13 +1289,10 @@ Thoughts on 25:
         ProcessorFactory pf = c.compileFile(schemaFile);
         DataProcessor dp = pf.onPath("/");
         dp = reserializeDataProcessor(dp);
-        DaffodilParseXMLReader parseXMLReader = dp.newXMLReaderInstance();
 
         java.io.File file = getResource("/test/japi/myDataCDATA2.dat");
         java.io.FileInputStream fisDP = new java.io.FileInputStream(file);
-        java.io.FileInputStream fisSAX = new java.io.FileInputStream(file);
         InputSourceDataInputStream disDP = new InputSourceDataInputStream(fisDP);
-        InputSourceDataInputStream disSAX = new InputSourceDataInputStream(fisSAX);
         ByteArrayOutputStream xmlBos = new ByteArrayOutputStream();
         XMLTextInfosetOutputter outputter = new XMLTextInfosetOutputter(xmlBos, true);
         ParseResult res = dp.parse(disDP, outputter);
@@ -1312,11 +1309,9 @@ Thoughts on 25:
         ProcessorFactory pf = c.compileFile(schemaFile);
         DataProcessor dp = pf.onPath("/");
         dp = reserializeDataProcessor(dp);
-        DaffodilParseXMLReader parseXMLReader = dp.newXMLReaderInstance();
 
         java.io.File file = getResource("/test/japi/myDataCDATA3.dat");
         java.io.FileInputStream fisDP = new java.io.FileInputStream(file);
-        java.io.FileInputStream fisSAX = new java.io.FileInputStream(file);
         InputSourceDataInputStream disDP = new InputSourceDataInputStream(fisDP);
         ByteArrayOutputStream xmlBos = new ByteArrayOutputStream();
         XMLTextInfosetOutputter outputter = new XMLTextInfosetOutputter(xmlBos, true);
@@ -1334,11 +1329,9 @@ Thoughts on 25:
         ProcessorFactory pf = c.compileFile(schemaFile);
         DataProcessor dp = pf.onPath("/");
         dp = reserializeDataProcessor(dp);
-        DaffodilParseXMLReader parseXMLReader = dp.newXMLReaderInstance();
 
         java.io.File file = getResource("/test/japi/myDataCDATA4.dat");
         java.io.FileInputStream fisDP = new java.io.FileInputStream(file);
-        java.io.FileInputStream fisSAX = new java.io.FileInputStream(file);
         InputSourceDataInputStream disDP = new InputSourceDataInputStream(fisDP);
         ByteArrayOutputStream xmlBos = new ByteArrayOutputStream();
         XMLTextInfosetOutputter outputter = new XMLTextInfosetOutputter(xmlBos, true);
@@ -1346,6 +1339,6 @@ Thoughts on 25:
         String infosetDPString = xmlBos.toString();
         String[] actual = infosetDPString.split("tns:foo");
 
-        assertEquals(" xmlns:tns=\"http://example.com\"><![CDATA[this contains a CRLF ]]>&#xE00D;<![CDATA[\nline ending]]></", actual[1] );
+        assertEquals(" xmlns:tns=\"http://example.com\"><![CDATA[this contains a CRLF]]>&#xE00D;<![CDATA[\nline ending]]></", actual[1] );
     }
 }

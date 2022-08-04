@@ -127,19 +127,19 @@ class XMLTextInfosetOutputter private (writer: java.io.Writer, pretty: Boolean, 
 
             //Traverse over the string surrounding correct areas with CDATA info
             for(c <- readyForCDATA) {
-                if(charEntMode) {
-                    correctFormat.append(c)
-                    if(c == ';'){
-                      correctFormat.append(cdataIntro)
-                      charEntMode = false
-                    }
-                } else {
-                  if(c == '&'){
-                    correctFormat.append(cdataOutro)
-                    charEntMode = true
-                  }
-                    correctFormat.append(c)
+              if(charEntMode) {
+                correctFormat.append(c)
+                if(c == ';'){
+                  correctFormat.append(cdataIntro)
+                  charEntMode = false
                 }
+              } else {
+                if(c == '&'){
+                  correctFormat.append(cdataOutro)
+                  charEntMode = true
+                }
+                correctFormat.append(c)
+              }
             }
 
             //You are done with the string. If you are still a non

@@ -1168,4 +1168,80 @@ class TestScalaAPI {
       assertFalse(ur.isError)
       assertEquals(expectedData, bos.toString())
     }
+
+    @Test
+    def testScalaAPICDATA1(): Unit = {
+      val c = Daffodil.compiler().withTunable("xmlOutputStyle","prettyPrintSafe")
+
+      val schemaFile = getResource("/test/sapi/mySchemaCDATA1.dfdl.xsd")
+      val pf = c.compileFile(schemaFile)
+      var dp = pf.onPath("/")
+      dp = reserializeDataProcessor(dp)
+
+      val file = getResource("/test/sapi/myDataCDATA1.dat")
+      val fis = new java.io.FileInputStream(file)
+      val input = new InputSourceDataInputStream(fis)
+      val outputter = new ScalaXMLInfosetOutputter(showFormatInfo = false)
+      val res = dp.parse(input, outputter)
+      val err = res.isError()
+      assertFalse(err)
+      assertEquals("<![CDATA[NO_WHITESPACE_AT_ALL]]>", outputter.getResult.text)
+    }
+
+    @Test
+    def testScalaAPICDATA2(): Unit = {
+      val c = Daffodil.compiler().withTunable("xmlOutputStyle","prettyPrintSafe")
+
+      val schemaFile = getResource("/test/sapi/mySchemaCDATA2.dfdl.xsd")
+      val pf = c.compileFile(schemaFile)
+      var dp = pf.onPath("/")
+      dp = reserializeDataProcessor(dp)
+
+      val file = getResource("/test/sapi/myDataCDATA2.dat")
+      val fis = new java.io.FileInputStream(file)
+      val input = new InputSourceDataInputStream(fis)
+      val outputter = new ScalaXMLInfosetOutputter(showFormatInfo = false)
+      val res = dp.parse(input, outputter)
+      val err = res.isError()
+      assertFalse(err)
+      assertEquals("<![CDATA[   'some' stuff   here ]]>&#xE000;<![CDATA[ and ]]]]>&gt;<![CDATA[ even]]>", outputter.getResult.text)
+    }
+
+    @Test
+    def testScalaAPICDATA3(): Unit = {
+      val c = Daffodil.compiler().withTunable("xmlOutputStyle","prettyPrintSafe")
+
+      val schemaFile = getResource("/test/sapi/mySchemaCDATA3.dfdl.xsd")
+      val pf = c.compileFile(schemaFile)
+      var dp = pf.onPath("/")
+      dp = reserializeDataProcessor(dp)
+
+      val file = getResource("/test/sapi/myDataCDATA3.dat")
+      val fis = new java.io.FileInputStream(file)
+      val input = new InputSourceDataInputStream(fis)
+      val outputter = new ScalaXMLInfosetOutputter(showFormatInfo = false)
+      val res = dp.parse(input, outputter)
+      val err = res.isError()
+      assertFalse(err)
+      assertEquals("6.892", outputter.getResult.text)
+    }
+
+    @Test
+    def testScalaAPICDATA4(): Unit = {
+      val c = Daffodil.compiler().withTunable("xmlOutputStyle","prettyPrintSafe")
+
+      val schemaFile = getResource("/test/sapi/mySchemaCDATA4.dfdl.xsd")
+      val pf = c.compileFile(schemaFile)
+      var dp = pf.onPath("/")
+      dp = reserializeDataProcessor(dp)
+
+      val file = getResource("/test/sapi/myDataCDATA4.dat")
+      val fis = new java.io.FileInputStream(file)
+      val input = new InputSourceDataInputStream(fis)
+      val outputter = new ScalaXMLInfosetOutputter(showFormatInfo = false)
+      val res = dp.parse(input, outputter)
+      val err = res.isError()
+      assertFalse(err)
+      assertEquals("<![CDATA[this contains a CRLF]]>&#xE00D;<![CDATA[\nline ending]]>", outputter.getResult.text)
+    }
 }

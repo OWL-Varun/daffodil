@@ -79,11 +79,56 @@ class ScalaXMLInfosetOutputter(showFormatInfo: Boolean = false, showFreedInfo: B
 
     val attributes = getAttributes(diSimple)
 
+    val correctFormat = new StringBuilder("");
+    val cdataIntro = "<![CDATA["
+    val cdataOutro = "]]>"
+    var charEntMode: Boolean = false
+
     val children =
       if (!isNilled(diSimple) && diSimple.hasValue) {
         val text =
           if (diSimple.erd.optPrimType.get.isInstanceOf[NodeInfo.String.Kind]) {
-            remapped(diSimple.dataValueAsString)
+            val s = remapped(diSimple.dataValueAsString)
+
+            if(xmlOutputStyle == "prettyPrintSafe"){
+              val newData = s.replaceAll(">","&gt;").replace("\\r\\n", "&#xE00D;")
+              val readyForCDATA = newData.replaceAll("0x","&#x")
+              //Figure out what mode you have to be in
+              if(readyForCDATA(0) == '&') {
+                charEntMode = true
+              } else {
+                charEntMode = false
+                correctFormat.append(cdataIntro)
+              }
+
+              //Traverse over the string surrounding correct areas with CDATA info
+              for(c <- readyForCDATA) {
+                if(charEntMode) {
+                  correctFormat.append(c)
+                  if(c == ';'){
+                    correctFormat.append(cdataIntro)
+                    charEntMode = false
+                  }
+                } else {
+                  if(c == '&'){
+                    correctFormat.append(cdataOutro)
+                    charEntMode = true
+                  }
+                  correctFormat.append(c)
+                }
+              }
+
+              //You are done with the string. If you are still a non
+	            //char ent then close and finish up.
+              if(!charEntMode){
+                correctFormat.append(cdataOutro)
+              }
+
+              correctFormat.toString()
+            }else{
+              s
+            }
+
             //construct node sequence of pcdata nodes(unescaped text)/entity references nodes
           } else {
             diSimple.dataValueAsString

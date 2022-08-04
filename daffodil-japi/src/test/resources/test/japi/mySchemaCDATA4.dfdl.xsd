@@ -29,6 +29,6 @@
 
   <include schemaLocation="org/apache/daffodil/xsd/DFDLGeneralFormat.dfdl.xsd"/>
 
-  <element name="foo" type="xsd:string" dfdl:lengthKind="explicit" dfdl:length="38"/>
+  <element name="foo" type="xsd:string" dfdl:lengthKind="explicit" dfdl:length="37"/>
 
 </schema>
