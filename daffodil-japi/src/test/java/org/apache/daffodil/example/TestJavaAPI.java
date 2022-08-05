@@ -1341,4 +1341,88 @@ Thoughts on 25:
 
         assertEquals(" xmlns:tns=\"http://example.com\"><![CDATA[this contains a CRLF]]>&#xE00D;<![CDATA[\nline ending]]></", actual[1] );
     }
+
+    @Test
+    public void testJavaAPIJDOMCDATA1() throws IOException, ClassNotFoundException {
+        org.apache.daffodil.japi.Compiler c = Daffodil.compiler().withTunable("xmlOutputStyle","prettyPrintSafe");
+        java.io.File schemaFile = getResource("/test/japi/mySchemaCDATA1.dfdl.xsd");
+        ProcessorFactory pf = c.compileFile(schemaFile);
+        DataProcessor dp = pf.onPath("/");
+        dp = reserializeDataProcessor(dp);
+
+        java.io.File file = getResource("/test/japi/myDataCDATA1.dat");
+        java.io.FileInputStream fis = new java.io.FileInputStream(file);
+        InputSourceDataInputStream dis = new InputSourceDataInputStream(fis);
+        JDOMInfosetOutputter outputter = new JDOMInfosetOutputter();
+        ParseResult res = dp.parse(dis, outputter);
+        boolean err = res.isError();
+        assertFalse(err);
+        org.jdom2.Document doc = outputter.getResult();
+        org.jdom2.Element rootElem = doc.getRootElement();
+
+        assertEquals("<![CDATA[NO_WHITESPACE_AT_ALL]]>", rootElem.getText());
+    }
+
+    @Test
+    public void testJavaAPIJDOMCDATA2() throws IOException, ClassNotFoundException {
+        org.apache.daffodil.japi.Compiler c = Daffodil.compiler().withTunable("xmlOutputStyle","prettyPrintSafe");
+        java.io.File schemaFile = getResource("/test/japi/mySchemaCDATA2.dfdl.xsd");
+        ProcessorFactory pf = c.compileFile(schemaFile);
+        DataProcessor dp = pf.onPath("/");
+        dp = reserializeDataProcessor(dp);
+
+        java.io.File file = getResource("/test/japi/myDataCDATA2.dat");
+        java.io.FileInputStream fis = new java.io.FileInputStream(file);
+        InputSourceDataInputStream dis = new InputSourceDataInputStream(fis);
+        JDOMInfosetOutputter outputter = new JDOMInfosetOutputter();
+        ParseResult res = dp.parse(dis, outputter);
+        boolean err = res.isError();
+        assertFalse(err);
+        org.jdom2.Document doc = outputter.getResult();
+        org.jdom2.Element rootElem = doc.getRootElement();
+
+        assertEquals("<![CDATA[   'some' stuff   here ]]>&#xE000;<![CDATA[ and ]]]]>&gt;<![CDATA[ even]]>", rootElem.getText());
+    }
+
+    @Test
+    public void testJavaAPIJDOMCDATA3() throws IOException, ClassNotFoundException {
+        org.apache.daffodil.japi.Compiler c = Daffodil.compiler().withTunable("xmlOutputStyle","prettyPrintSafe");
+        java.io.File schemaFile = getResource("/test/japi/mySchemaCDATA3.dfdl.xsd");
+        ProcessorFactory pf = c.compileFile(schemaFile);
+        DataProcessor dp = pf.onPath("/");
+        dp = reserializeDataProcessor(dp);
+
+        java.io.File file = getResource("/test/japi/myDataCDATA3.dat");
+        java.io.FileInputStream fis = new java.io.FileInputStream(file);
+        InputSourceDataInputStream dis = new InputSourceDataInputStream(fis);
+        JDOMInfosetOutputter outputter = new JDOMInfosetOutputter();
+        ParseResult res = dp.parse(dis, outputter);
+        boolean err = res.isError();
+        assertFalse(err);
+        org.jdom2.Document doc = outputter.getResult();
+        org.jdom2.Element rootElem = doc.getRootElement();
+
+        assertEquals("6.892", rootElem.getText());
+    }
+
+    @Test
+    public void testJavaAPIJDOMCDATA4() throws IOException, ClassNotFoundException {
+        org.apache.daffodil.japi.Compiler c = Daffodil.compiler().withTunable("xmlOutputStyle","prettyPrintSafe");
+        java.io.File schemaFile = getResource("/test/japi/mySchemaCDATA4.dfdl.xsd");
+        ProcessorFactory pf = c.compileFile(schemaFile);
+        DataProcessor dp = pf.onPath("/");
+        dp = reserializeDataProcessor(dp);
+
+        java.io.File file = getResource("/test/japi/myDataCDATA4.dat");
+        java.io.FileInputStream fis = new java.io.FileInputStream(file);
+        InputSourceDataInputStream dis = new InputSourceDataInputStream(fis);
+        JDOMInfosetOutputter outputter = new JDOMInfosetOutputter();
+        ParseResult res = dp.parse(dis, outputter);
+        boolean err = res.isError();
+        assertFalse(err);
+        org.jdom2.Document doc = outputter.getResult();
+        org.jdom2.Element rootElem = doc.getRootElement();
+
+        assertEquals("<![CDATA[this contains a CRLF]]>&#xE00D;<![CDATA[\nline ending]]>", rootElem.getText());
+    }
 }
