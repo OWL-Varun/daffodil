@@ -51,6 +51,10 @@ import org.xml.sax.SAXNotRecognizedException;
 import org.xml.sax.SAXNotSupportedException;
 import org.xml.sax.XMLReader;
 
+import org.apache.daffodil.japi.infoset.W3CDOMInfosetOutputter;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
 import javax.xml.XMLConstants;
 
 public class TestJavaAPI {
@@ -1424,5 +1428,89 @@ Thoughts on 25:
         org.jdom2.Element rootElem = doc.getRootElement();
 
         assertEquals("<![CDATA[this contains a CRLF]]>&#xE00D;<![CDATA[\nline ending]]>", rootElem.getText());
+    }
+
+    @Test
+    public void testJavaAPIW3CDOMCDATA1() throws IOException, ClassNotFoundException {
+        org.apache.daffodil.japi.Compiler c = Daffodil.compiler().withTunable("xmlOutputStyle","prettyPrintSafe");
+        java.io.File schemaFile = getResource("/test/japi/mySchemaCDATA1.dfdl.xsd");
+        ProcessorFactory pf = c.compileFile(schemaFile);
+        DataProcessor dp = pf.onPath("/");
+        dp = reserializeDataProcessor(dp);
+
+        java.io.File file = getResource("/test/japi/myDataCDATA1.dat");
+        java.io.FileInputStream fis = new java.io.FileInputStream(file);
+        InputSourceDataInputStream dis = new InputSourceDataInputStream(fis);
+        W3CDOMInfosetOutputter outputter = new W3CDOMInfosetOutputter();
+        ParseResult res = dp.parse(dis, outputter);
+        boolean err = res.isError();
+        assertFalse(err);
+        Document doc = outputter.getResult();
+        Element rootElem = doc.getDocumentElement();
+
+        assertEquals("<![CDATA[NO_WHITESPACE_AT_ALL]]>", rootElem.getTextContent());
+    }
+
+    @Test
+    public void testJavaAPIW3CDOMCDATA2() throws IOException, ClassNotFoundException {
+        org.apache.daffodil.japi.Compiler c = Daffodil.compiler().withTunable("xmlOutputStyle","prettyPrintSafe");
+        java.io.File schemaFile = getResource("/test/japi/mySchemaCDATA2.dfdl.xsd");
+        ProcessorFactory pf = c.compileFile(schemaFile);
+        DataProcessor dp = pf.onPath("/");
+        dp = reserializeDataProcessor(dp);
+
+        java.io.File file = getResource("/test/japi/myDataCDATA2.dat");
+        java.io.FileInputStream fis = new java.io.FileInputStream(file);
+        InputSourceDataInputStream dis = new InputSourceDataInputStream(fis);
+        W3CDOMInfosetOutputter outputter = new W3CDOMInfosetOutputter();
+        ParseResult res = dp.parse(dis, outputter);
+        boolean err = res.isError();
+        assertFalse(err);
+        Document doc = outputter.getResult();
+        Element rootElem = doc.getDocumentElement();
+
+        assertEquals("<![CDATA[   'some' stuff   here ]]>&#xE000;<![CDATA[ and ]]]]>&gt;<![CDATA[ even]]>", rootElem.getTextContent());
+    }
+
+    @Test
+    public void testJavaAPIW3CDOMCDATA3() throws IOException, ClassNotFoundException {
+        org.apache.daffodil.japi.Compiler c = Daffodil.compiler().withTunable("xmlOutputStyle","prettyPrintSafe");
+        java.io.File schemaFile = getResource("/test/japi/mySchemaCDATA3.dfdl.xsd");
+        ProcessorFactory pf = c.compileFile(schemaFile);
+        DataProcessor dp = pf.onPath("/");
+        dp = reserializeDataProcessor(dp);
+
+        java.io.File file = getResource("/test/japi/myDataCDATA3.dat");
+        java.io.FileInputStream fis = new java.io.FileInputStream(file);
+        InputSourceDataInputStream dis = new InputSourceDataInputStream(fis);
+        W3CDOMInfosetOutputter outputter = new W3CDOMInfosetOutputter();
+        ParseResult res = dp.parse(dis, outputter);
+        boolean err = res.isError();
+        assertFalse(err);
+        Document doc = outputter.getResult();
+        Element rootElem = doc.getDocumentElement();
+
+        assertEquals("6.892", rootElem.getTextContent());
+    }
+
+    @Test
+    public void testJavaAPIW3CDOMCDATA4() throws IOException, ClassNotFoundException {
+        org.apache.daffodil.japi.Compiler c = Daffodil.compiler().withTunable("xmlOutputStyle","prettyPrintSafe");
+        java.io.File schemaFile = getResource("/test/japi/mySchemaCDATA4.dfdl.xsd");
+        ProcessorFactory pf = c.compileFile(schemaFile);
+        DataProcessor dp = pf.onPath("/");
+        dp = reserializeDataProcessor(dp);
+
+        java.io.File file = getResource("/test/japi/myDataCDATA4.dat");
+        java.io.FileInputStream fis = new java.io.FileInputStream(file);
+        InputSourceDataInputStream dis = new InputSourceDataInputStream(fis);
+        W3CDOMInfosetOutputter outputter = new W3CDOMInfosetOutputter();
+        ParseResult res = dp.parse(dis, outputter);
+        boolean err = res.isError();
+        assertFalse(err);
+        Document doc = outputter.getResult();
+        Element rootElem = doc.getDocumentElement();
+
+        assertEquals("<![CDATA[this contains a CRLF]]>&#xE00D;<![CDATA[\nline ending]]>", rootElem.getTextContent());
     }
 }

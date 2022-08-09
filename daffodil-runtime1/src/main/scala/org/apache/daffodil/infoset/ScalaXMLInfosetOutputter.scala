@@ -129,7 +129,6 @@ class ScalaXMLInfosetOutputter(showFormatInfo: Boolean = false, showFreedInfo: B
               s
             }
 
-            //construct node sequence of pcdata nodes(unescaped text)/entity references nodes
           } else {
             diSimple.dataValueAsString
           }
