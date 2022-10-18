@@ -30,6 +30,7 @@ import org.apache.daffodil.processors.WSPStarDelim
 import org.apache.daffodil.processors.LSPDelim
 import org.apache.daffodil.processors.LSPPlusDelim
 import org.apache.daffodil.processors.LSPStarDelim
+import org.apache.daffodil.processors.SPDelim
 import org.apache.daffodil.processors.SPPlusDelim
 import org.apache.daffodil.processors.SPStarDelim
 import org.apache.daffodil.processors.parsers.DelimiterTextType
@@ -70,6 +71,8 @@ object CreateDelimiterDFA {
    */
   def apply(delimType: DelimiterTextType.Type, ci: DPathCompileInfo, delimiterStr: String, ignoreCase: Boolean): DFADelimiter = {
     val d = new Delimiter()
+    System.err.println("apply(): ignoreCase param")
+    System.err.println("apply():delimiterStr value is: " + delimiterStr)
     d.compileDelimiter(delimiterStr, ignoreCase)
     val db = d.delimBuf
     apply(delimType, ci, db, delimiterStr, ignoreCase)
@@ -81,6 +84,8 @@ object CreateDelimiterDFA {
    */
   def apply(delimType: DelimiterTextType.Type, ci: DPathCompileInfo, delimiterStr: String, outputNewLine: String): DFADelimiter = {
     val d = new Delimiter()
+    System.err.println("apply(): outputNewLine param")
+    System.err.println("apply():delimiterStr value is: " + delimiterStr)
     d.compileDelimiter(delimiterStr, false)
     val db = d.delimBuf
     apply(delimType, ci, db, delimiterStr, outputNewLine)
@@ -129,6 +134,9 @@ object CreateDelimiterDFA {
       }
       case d: LSPPlusDelim => {
         new DelimsPlusState(allStates, nextState, stateNum, "lsp+")
+      }
+      case d: SPDelim => {
+        new DelimsState(allStates, nextState, stateNum, "sp")
       }
       case d: SPStarDelim => {
         new DelimsStarState(allStates, nextState, stateNum, "sp*")
