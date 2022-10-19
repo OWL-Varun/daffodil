@@ -43,8 +43,8 @@ class EntitySyntaxException(msg: String) extends Exception(msg)
  */
 final class EntityReplacer {
 
-  val dfdlEntityName = "NUL|SOH|STX|ETX|EOT|ENQ|ACK|BEL|BS|HT|LF|VT|FF|CR|SO|SI|DLE|DC[1-4]|NAK|SYN|ETB|CAN|EM|SUB|ESC|FS|GS|RS|US|DEL|NBSP|NEL|LS"
-  val dfdlCharClassEntityName = "NL|WSP|WSP\\*|WSP\\+|ES|LSP|LSP\\*|LSP\\+|SP|SP\\*|SP\\+"
+  val dfdlEntityName = "NUL|SOH|STX|ETX|EOT|ENQ|ACK|BEL|BS|HT|LF|VT|FF|CR|SO|SI|DLE|DC[1-4]|NAK|SYN|ETB|CAN|EM|SUB|ESC|FS|GS|RS|US|SP|DEL|NBSP|NEL|LS"
+  val dfdlCharClassEntityName = "NL|WSP|WSP\\*|WSP\\+|ES|LSP|LSP\\*|LSP\\+|SP\\*|SP\\+"
 
   val entityCharacterUnicode: List[(String, String, Matcher)] =
     List(("NUL", "\u0000", Pattern.compile("%" + "NUL" + ";", Pattern.MULTILINE).matcher("")),
@@ -79,6 +79,7 @@ final class EntityReplacer {
       ("GS", "\u001D", Pattern.compile("%" + "GS" + ";", Pattern.MULTILINE).matcher("")),
       ("RS", "\u001E", Pattern.compile("%" + "RS" + ";", Pattern.MULTILINE).matcher("")),
       ("US", "\u001F", Pattern.compile("%" + "US" + ";", Pattern.MULTILINE).matcher("")),
+      ("SP", "\u0020", Pattern.compile("%" + "SP" + ";", Pattern.MULTILINE).matcher("")),
       ("DEL", "\u007F", Pattern.compile("%" + "DEL" + ";", Pattern.MULTILINE).matcher("")),
       ("NBSP", "\u00A0", Pattern.compile("%" + "NBSP" + ";", Pattern.MULTILINE).matcher("")),
       ("NEL", "\u0085", Pattern.compile("%" + "NEL" + ";", Pattern.MULTILINE).matcher("")),
@@ -89,7 +90,6 @@ final class EntityReplacer {
       ("WSP*", "", Pattern.compile("%" + "WSP\\*" + ";", Pattern.MULTILINE).matcher("")),
       ("WSP+", "\u0020", Pattern.compile("%" + "WSP\\+" + ";", Pattern.MULTILINE).matcher("")),
       ("ES", "", Pattern.compile("%" + "ES" + ";", Pattern.MULTILINE).matcher("")),
-      ("SP", "\u0020", Pattern.compile("%" + "SP" + ";", Pattern.MULTILINE).matcher("")),
       ("SP*", "", Pattern.compile("%" + "SP\\*" + ";", Pattern.MULTILINE).matcher("")),               //SP* outputs nothing
       ("SP+", "\u0020", Pattern.compile("%" + "SP\\+" + ";", Pattern.MULTILINE).matcher("")),         //SP+ outputs a single space
       ("LSP", "\u0020", Pattern.compile("%" + "LSP" + ";").matcher("")),                              //LSP outputs a single space
@@ -243,7 +243,7 @@ final class EntityReplacer {
    * which can be computed at runtime.
    */
   def replaceCharClassForUnparse(input: String): String = {
-    System.err.println("replaceCharClassForUnparse()")
+    //System.err.println("replaceCharClassForUnparse()")
     replace(input, charClassReplacements)
   }
 
@@ -292,13 +292,13 @@ final class EntityReplacer {
    */
   private def replaceEntity(proposedEntity: String, orig: String, context: Option[ThrowsSDE], forUnparse: Boolean,
     allowByteEntity: Boolean): String = {
-    System.err.println("replaceEntity()")
+    //System.err.println("replaceEntity()")
     val result = proposedEntity match {
       case charClassEntityRegex(_, _) => {
         if (forUnparse) {
           replaceCharClassForUnparse(proposedEntity)
         } else {
-          System.err.println("ProposedEntity as is: " + proposedEntity)
+          //System.err.println("ProposedEntity as is: " + proposedEntity)
           proposedEntity // WSP, WSP+/*, NL, etc. Don't get replaced for parsing
         }
       }
@@ -345,7 +345,7 @@ final class EntityReplacer {
    */
   private def process(input: String, orig: String, context: Option[ThrowsSDE], forUnparse: Boolean,
     allowByteEntities: Boolean = true): String = {
-    System.err.println("process()")
+    //System.err.println("process()")
     Assert.usage(!input.contains("%%"))
     if (!input.contains("%")) { return input }
 
@@ -371,11 +371,11 @@ final class EntityReplacer {
       // Now replace the entity appropriately. This will throw errors on malformed entities.
       val newEntity = replaceEntity("%" + possibleEntityName + ";", orig, context, forUnparse, allowByteEntities)
       val res = newEntity + afterEntity
-      System.err.println("process():tokens2 value: " + res)
+      //System.err.println("process():tokens2 value: " + res)
       res
     })
     val output = startingToken + tokens2.mkString
-    System.err.println("process():output value: " + output)
+    //System.err.println("process():output value: " + output)
     output
   }
 
@@ -406,13 +406,13 @@ final class EntityReplacer {
     val inputUntilPossibleEntity = input.substring(0, startOfPossibleEntity)
     val inputWithPossibleEntity = input.substring(startOfPossibleEntity)
 
-    System.err.println("replaceAll():input value: " + input)
+    //System.err.println("replaceAll():input value: " + input)
 
     if (!inputWithPossibleEntity.contains("%%")) {
       // No escaped percents, just process
       val processedInput = process(inputWithPossibleEntity, input, context, forUnparse, allowByteEntities)
       val fullResult = inputUntilPossibleEntity + processedInput
-      System.err.println("replaceAll():fullResult: value is: " + fullResult)
+      //System.err.println("replaceAll():fullResult: value is: " + fullResult)
       return fullResult
     }
 
@@ -519,7 +519,7 @@ sealed abstract class StringLiteralBase(propNameArg: String,
   private val whitespaceMatcher = """.*(\s+).*""".r
 
   def cook(raw: String, context: ThrowsSDE, forUnparse: Boolean): String = {
-    System.err.println("cook():raw value is: " + raw)
+    //System.err.println("cook():raw value is: " + raw)
     val hasWhitespace: Boolean = raw match {
       case whitespaceMatcher(_) => true
       case _ => false
@@ -529,7 +529,7 @@ sealed abstract class StringLiteralBase(propNameArg: String,
     val thawed = thaw(raw)
     testThawed(thawed, context)
     val cooked = EntityReplacer { e => e.replaceAll(thawed, Some(context), forUnparse, allowByteEntities) }
-    System.err.println("cook():cooked value is: " + cooked)
+    //System.err.println("cook():cooked value is: " + cooked)
     testCooked(cooked, context)
     cooked
   }
@@ -558,7 +558,7 @@ sealed trait NonEmptyMixin { self: StringLiteralBase =>
 sealed trait SingleCharacterMixin { self: StringLiteralBase =>
 
   override protected def testCooked(cooked: String, context: ThrowsSDE): Unit = {
-    System.err.println("SingleCharacterMixin:cooked value is: " + cooked)
+    //System.err.println("SingleCharacterMixin:cooked value is: " + cooked)
     context.schemaDefinitionUnless(cooked == "%SP;" || cooked.length == 1 ||
       cooked =:= "%%", "For property dfdl:%s the length of string must be exactly 1 character.", propName)
   }
@@ -670,11 +670,11 @@ sealed abstract class ListOfStringLiteralBase(propNameArg: String,
   private lazy val olc = oneLiteralCooker
 
   protected def cook(raw: String, context: ThrowsSDE, forUnparse: Boolean): List[String] = {
-    System.err.println("ListOfStrLiteralBase:cook:raw value is: " + raw)
+    //System.err.println("ListOfStrLiteralBase:cook:raw value is: " + raw)
     if (raw.length != 0 && (raw.head.isWhitespace || raw.last.isWhitespace)) {
       val ws = if (raw.head.isWhitespace) raw.head else raw.last
       val wsVisible = Misc.remapCodepointToVisibleGlyph(ws.toChar).toChar
-      System.err.println("ListOfStrLiteralBase:cook:wsVisible value is: "+ wsVisible)
+      //System.err.println("ListOfStrLiteralBase:cook:wsVisible value is: "+ wsVisible)
       val hexCodePoint = "%04x".format(ws.toInt)
       context.SDE("The property '%s' cannot start or end with the string \"%s\"(Unicode hex code point U+%s), or consist entirely of whitespace."
         + "\nDid you mean to use character entities like '%%SP;' or '%%NL;' to indicate whitespace in the data format instead?", propNameArg, wsVisible, hexCodePoint)

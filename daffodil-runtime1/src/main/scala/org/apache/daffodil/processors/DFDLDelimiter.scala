@@ -72,11 +72,11 @@ class Delimiter {
   //
   def compileDelimiter(pDelimiter: String, ignoreCase: Boolean): Unit = {
     delimiterStr = pDelimiter
-    System.err.println("Value of delimiterStr: " + delimiterStr)  //check if this has %
+    //System.err.println("Value of delimiterStr: " + delimiterStr)  //check if this has %
     delimBuf = buildDelimBuf(delimiterStr, ignoreCase)
-    System.err.println("Value of delimBuf: " + delimBuf.mkString)  //check if this has %
+    //System.err.println("Value of delimBuf: " + delimBuf.mkString)  //check if this has %
     delimRegExParseDelim = this.delimRegexParseDelim(delimBuf)
-    System.err.println("Value of delimRegexParseDelim: " + delimRegExParseDelim)
+    //System.err.println("Value of delimRegexParseDelim: " + delimRegExParseDelim)
   }
 
   // Reduces complicated delimiters containing consecutive WSP, WSP* and WSP+
@@ -102,7 +102,7 @@ class Delimiter {
   }
 
   def reduceWhitespaceDelimiters(delims: Array[DelimBase], delimType: String): Array[DelimBase] = {
-    System.err.println("In reduceWhitespaceDelimiters for: " + delimType)
+    //System.err.println("In reduceWhitespaceDelimiters for: " + delimType)
     val q: Queue[DelimBase] = new Queue[DelimBase]()
 
     // Counters to keep track of Delim base,+,* objects
@@ -170,11 +170,15 @@ class Delimiter {
             while (i < numDelim_Standard) {
               val delim2 = delimType match {
                 case "wsp" => new WSPDelim
-                case "lsp" => new LSPDelim
+                case "lsp" => {
+                  System.err.println("LSPDelim alt case")
+                  new LSPDelim
+                }
                 case "sp" => new SPDelim
               }
               delim2.index = idx
               q += delim2
+              System.err.println("Alt case follow thru")
               idx += 1
               i += 1
             }
@@ -209,11 +213,15 @@ class Delimiter {
       while (i < numDelim_Standard) {
         val delim = delimType match {
           case "wsp" => new WSPDelim
-          case "lsp" => new LSPDelim
+          case "lsp" => {
+            System.err.println("LSPDelim Outer")
+            new LSPDelim
+          }
           case "sp" => new SPDelim
         }
         delim.index = idx
         q += delim
+        System.err.println("Alt case follow thru outer")
         idx += 1
         i += 1
       }
@@ -386,7 +394,7 @@ class Delimiter {
                 case '{' => sb.append("\\{")
                 case '}' => sb.append("\\}")
                 case x => {
-                  System.err.println("Appending x: -" + x +"-")
+                  //System.err.println("Appending x: -" + x +"-")
                   sb.append(x)
                 }
               }
@@ -438,14 +446,17 @@ class Delimiter {
     }
 
     if (mLSP.find()) {
+      System.err.println("mLSP")
       classList += ("LSP" -> (mLSP.start() -> mLSP.end()))
     }
 
     if (mLSP_Plus.find()) {
+      System.err.println("mLSPPlus")
       classList += ("LSP+" -> (mLSP_Plus.start() -> mLSP_Plus.end()))
     }
 
     if (mLSP_Star.find()) {
+      System.err.println("mLSPStar")
       classList += ("LSP*" -> (mLSP_Star.start() -> mLSP_Star.end()))
     }
 
@@ -475,7 +486,10 @@ class Delimiter {
         case "LSP*" => (length, One(new LSPStarDelim()))
         case "SP" => (length, One(new SPDelim()))
         case "SP+" => (length, One(new SPPlusDelim()))
-        case "SP*" => (length, One(new SPStarDelim()))
+        case "SP*" => {
+          System.err.println("tuple SPStarDelim")
+          (length, One(new SPStarDelim()))
+        }
       }
       return result
     }
@@ -755,6 +769,7 @@ abstract class WSPBase extends DelimBase with WSP {
       case LSP | PSP | NARROW | MED | IDE => isMatched = true
       case _ => isMatched = false
     }
+    System.err.println("checkMatch WSPBase")
     isMatched
   }
 
@@ -771,6 +786,7 @@ abstract class LSPBase extends DelimBase with LSP {
       case SPACE | CTRL0 => isMatched = true
       case _ => isMatched = false
     }
+    System.err.println("checkMatch LSPBase")
     isMatched
   }
 
@@ -787,6 +803,7 @@ abstract class SPBase extends DelimBase with SP {
       case SPACE => isMatched = true
       case _ => isMatched = false
     }
+    System.err.println("checkMatch SPBase")
     isMatched
   }
 
@@ -834,7 +851,10 @@ class LSPDelim extends LSPBase with LSP {
     val res = typeName
     res
   }
-  def unparseValue(outputNewLine: String): String = SPACE.toString
+  def unparseValue(outputNewLine: String): String = {
+    System.err.println("unparseValue LSPDelim")
+    SPACE.toString
+  }
 }
 
 class LSPPlusDelim extends LSPBase with LSP {
@@ -844,7 +864,10 @@ class LSPPlusDelim extends LSPBase with LSP {
     val res = typeName
     res
   }
-  def unparseValue(outputNewLine: String): String = SPACE.toString
+  def unparseValue(outputNewLine: String): String = {
+    System.err.println("unparseValue LSPPlusDelim")
+    SPACE.toString
+  }
 }
 
 class LSPStarDelim extends LSPBase with LSP {
@@ -855,7 +878,10 @@ class LSPStarDelim extends LSPBase with LSP {
     res
   }
 
-  def unparseValue(outputNewLine: String): String = ""
+  def unparseValue(outputNewLine: String): String = {
+    System.err.println("unparseValue LSPStarS")
+    ""
+  }
 }
 
 class SPDelim extends SPBase with SP {
@@ -875,7 +901,10 @@ class SPPlusDelim extends SPBase with SP {
     val res = typeName
     res
   }
-  def unparseValue(outputNewLine: String): String = SPACE.toString
+  def unparseValue(outputNewLine: String): String = {
+    System.err.println("unparseValue SPPlusDelim")
+    SPACE.toString
+  }
 }
 
 class SPStarDelim extends SPBase with SP {
@@ -886,7 +915,10 @@ class SPStarDelim extends SPBase with SP {
     res
   }
 
-  def unparseValue(outputNewLine: String): String = ""
+  def unparseValue(outputNewLine: String): String = {
+    System.err.println("unparseValue SPStarDelim")
+    ""
+  }
 }
 
 /**

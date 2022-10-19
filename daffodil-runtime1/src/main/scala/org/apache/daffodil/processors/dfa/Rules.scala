@@ -107,13 +107,13 @@ abstract class State(states: => ArrayBuffer[State]) extends Serializable {
     val pTerm0 = states(0)
     val res =
       if (pTerm0.isInstanceOf[DelimsStarState]) {
-        val wspStar = pTerm0.asInstanceOf[DelimsStarState]
-        if (wspStar.checkMatch(charIn)) {
+        val starDelim = pTerm0.asInstanceOf[DelimsStarState]
+        if (starDelim.checkMatch(charIn)) {
           // Was a space
           true
         }
-        else if (wspStar.nextState == DFA.FinalState) {
-          // WSP* is not allowed to appear by itself as a terminator
+        else if (starDelim.nextState == DFA.FinalState) {
+          // WSP*/LSP* is not allowed to appear by itself as a terminator
           // or separator.
           //
           Assert.impossibleCase
@@ -619,22 +619,44 @@ abstract class DelimsBase(states: => ArrayBuffer[State], delimType: String)
     val result = delimType match {
       case "wsp" | "wsp+" | "wsp*" =>
         charIn match {
-          case CTRL0 | CTRL1 | CTRL2 | CTRL3 | CTRL4 => true
-          case SPACE | NEL | NBSP | OGHAM | MONG => true
-          case SP0 | SP1 | SP2 | SP3 | SP4 | SP5 | SP6 | SP7 | SP8 | SP9 | SP10 => true
-          case LSP | PSP | NARROW | MED | IDE => true
+          case CTRL0 | CTRL1 | CTRL2 | CTRL3 | CTRL4 => {
+            System.err.println("WSP1")
+            true
+          }
+          case SPACE | NEL | NBSP | OGHAM | MONG => {
+            System.err.println("WSP2")
+            true
+          }
+          case SP0 | SP1 | SP2 | SP3 | SP4 | SP5 | SP6 | SP7 | SP8 | SP9 | SP10 => {
+            System.err.println("WSP3")
+            true
+          }
+          case LSP | PSP | NARROW | MED | IDE => {
+            System.err.println("WSP4")
+            true
+          }
           case _ => false
         };
       case "lsp" | "lsp+" | "lsp*" =>
         charIn match {
-          case CTRL0 | SPACE => true
+          case CTRL0 | SPACE => {
+            System.err.println("LSP1")
+            true
+          }
           case _ => false
         };
       case "sp" | "sp+" | "sp*" =>
         charIn match {
-          case SPACE => true
+          case SPACE => {
+            System.err.println("SP1")
+            true
+          }
           case _ => false
         };
+      case _ => {
+        System.err.println("checkMatch default False")
+        false
+      }
     }
     result
   }
@@ -645,7 +667,10 @@ class DelimsState(states: => ArrayBuffer[State], val nextState: Int, val stateNu
 
   delimType match{
     case "wsp" => stateName = "WSPState"
-    case "lsp" => stateName = "LSPState"
+    case "lsp" => {
+      System.err.println("LSPState delimType")
+      stateName = "LSPState"
+    }
     case "sp" => stateName = "SPState"
   }
 
@@ -682,8 +707,14 @@ class DelimsPlusState(states: => ArrayBuffer[State], val nextState: Int, val sta
 
   delimType match{
     case "wsp+" => stateName = "WSPPlusState"
-    case "lsp+" => stateName = "LSPPlusState"
-    case "sp+" => stateName = "SPPlusState"
+    case "lsp+" => {
+      System.err.println("LSPPlusState delimType")
+      stateName = "LSPPlusState"
+    }
+    case "sp+" => {
+      System.err.println("SPPlusState delimType")
+      stateName = "SPPlusState"
+    }
   }
 
   val rulesToThisState = ArrayBuffer(
@@ -721,8 +752,14 @@ class DelimsStarState(states: => ArrayBuffer[State], val nextState: Int, val sta
 
   delimType match{
     case "wsp*" => stateName = "WSPStarState"
-    case "lsp*" => stateName = "LSPStarState"
-    case "sp*" => stateName = "SPStarState"
+    case "lsp*" => stateName = {
+      System.err.println("LSPStarState delimType")
+      "LSPStarState"
+    }
+    case "sp*" => stateName = {
+      System.err.println("SPStarState delimType")
+      "SPStarState"
+    }
   }
 
   val rules = ArrayBuffer(

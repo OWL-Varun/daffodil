@@ -71,8 +71,6 @@ object CreateDelimiterDFA {
    */
   def apply(delimType: DelimiterTextType.Type, ci: DPathCompileInfo, delimiterStr: String, ignoreCase: Boolean): DFADelimiter = {
     val d = new Delimiter()
-    System.err.println("apply(): ignoreCase param")
-    System.err.println("apply():delimiterStr value is: " + delimiterStr)
     d.compileDelimiter(delimiterStr, ignoreCase)
     val db = d.delimBuf
     apply(delimType, ci, db, delimiterStr, ignoreCase)
@@ -84,8 +82,6 @@ object CreateDelimiterDFA {
    */
   def apply(delimType: DelimiterTextType.Type, ci: DPathCompileInfo, delimiterStr: String, outputNewLine: String): DFADelimiter = {
     val d = new Delimiter()
-    System.err.println("apply(): outputNewLine param")
-    System.err.println("apply():delimiterStr value is: " + delimiterStr)
     d.compileDelimiter(delimiterStr, false)
     val db = d.delimBuf
     apply(delimType, ci, db, delimiterStr, outputNewLine)
@@ -118,30 +114,39 @@ object CreateDelimiterDFA {
         new CharState(allStates, d.char, nextState, stateNum, ignoreCase)
       }
       case d: WSPDelim => {
+        System.err.println("WSPStandard appended")
         new DelimsState(allStates, nextState, stateNum, "wsp")
       }
       case d: WSPStarDelim => {
+        System.err.println("WSPStar appended")
         new DelimsStarState(allStates, nextState, stateNum, "wsp*")
       }
       case d: WSPPlusDelim => {
+        System.err.println("WSPPlus appended")
         new DelimsPlusState(allStates, nextState, stateNum, "wsp+")
       }
       case d: LSPDelim => {
+        System.err.println("LSPStandard appended")
         new DelimsState(allStates, nextState, stateNum, "lsp")
       }
       case d: LSPStarDelim => {
+        System.err.println("LSPStar appended")
         new DelimsStarState(allStates, nextState, stateNum, "lsp*")
       }
       case d: LSPPlusDelim => {
+        System.err.println("LSPPlus appended")
         new DelimsPlusState(allStates, nextState, stateNum, "lsp+")
       }
       case d: SPDelim => {
+        System.err.println("SPStandard appended")
         new DelimsState(allStates, nextState, stateNum, "sp")
       }
       case d: SPStarDelim => {
+        System.err.println("SPStar appended")
         new DelimsStarState(allStates, nextState, stateNum, "sp*")
       }
       case d: SPPlusDelim => {
+        System.err.println("SPPlus appended")
         new DelimsPlusState(allStates, nextState, stateNum, "sp+")
       }
       case d: NLDelim => {
